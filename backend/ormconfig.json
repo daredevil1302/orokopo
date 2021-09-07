@@ -1,0 +1,15 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "postgres",
+  "password": "postgres",
+  "database": "orokopo",
+  "entities": ["dist/entities/*.entity.js"],
+  "migrations": ["dist/migrations/*.js"],
+  "cli": {
+    "migrationsDir": "src/migrations",
+    "entitiesDir": "src/entities"
+  },
+  "synchronize": false
+}
