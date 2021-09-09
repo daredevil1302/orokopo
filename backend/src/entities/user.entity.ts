@@ -34,7 +34,4 @@ export class User {
 
   @Column({ type: 'varchar', length: 75, nullable: false })
   password: string;
-
-  @Column()
-  dinamo: string;
 }
