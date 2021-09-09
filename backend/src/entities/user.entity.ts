@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Rent } from './rent.entity';
+import { Review } from './review.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -34,4 +36,10 @@ export class User {
 
   @Column({ type: 'varchar', length: 75, nullable: false })
   password: string;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
+
+  @OneToMany(() => Rent, (rent) => rent.user)
+  rents: Rent[];
 }
