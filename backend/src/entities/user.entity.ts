@@ -1,3 +1,4 @@
+import { Item } from './item.entity';
 import { Rent } from './rent.entity';
 import { Review } from './review.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
@@ -42,4 +43,7 @@ export class User {
 
   @OneToMany(() => Rent, (rent) => rent.user)
   rents: Rent[];
+
+  @OneToMany(() => Item, (item) => item.user)
+  items: Item[];
 }

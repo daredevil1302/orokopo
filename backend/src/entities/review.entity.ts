@@ -15,6 +15,6 @@ export class Review {
   @Column()
   date: Date;
 
-  @ManyToOne(() => User, (user) => user.reviews)
+  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
   user: User;
 }
