@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-Entity();
+@Entity()
 export class Item {
   @PrimaryGeneratedColumn()
   id: number;
