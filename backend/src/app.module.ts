@@ -5,32 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidationSchema } from './config.schema';
 
+import { configService } from './config/config.service';
+import { ItemsModule } from './items/items.module';
+import { RentsModule } from './rents/rents.module';
+import { ReviewsModule } from './reviews/reviews.module';
+
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: [`.env.stage.${process.env.STAGE}`],
-      validationSchema: configValidationSchema,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        synchronize: false,
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
-        entities: ['dist/entities/*.entity.js'],
-        migrations: ['dist/migrations/*.js'],
-        cli: {
-          migrationsDir: 'src/migrations',
-          entitiesDir: 'src/entities',
-        },
-      }),
-    }),
+    TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     AuthModule,
+    ItemsModule,
+    RentsModule,
+    ReviewsModule,
   ],
 })
 export class AppModule {}

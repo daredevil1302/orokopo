@@ -1,5 +1,6 @@
 import { Item } from './item.entity';
 import {
+  BaseEntity,
   Column,
   Entity,
   JoinTable,
@@ -8,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Category {
+export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

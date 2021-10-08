@@ -2,6 +2,7 @@ import { Category } from './category.entity';
 import { Rent } from './rent.entity';
 import { User } from './user.entity';
 import {
+  BaseEntity,
   Column,
   Entity,
   JoinTable,
@@ -11,8 +12,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-Entity();
-export class Item {
+@Entity('item')
+export class Item extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -31,10 +32,15 @@ export class Item {
   @Column()
   cancellation: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   rating: number;
 
-  @ManyToOne(() => User, (user) => user.items, { onDelete: 'CASCADE' })
+  @Column()
+  imageUrl: string;
+
+  @ManyToOne(() => User, (user) => user.items, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 
   @OneToOne(() => Rent, (rent) => rent.item)

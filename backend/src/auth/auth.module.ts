@@ -1,3 +1,9 @@
+import { ItemsService } from './../items/items.service';
+import { ItemsController } from './../items/items.controller';
+import { ItemsRepository } from './../items/items.repository';
+import { Rent } from './../entities/rent.entity';
+import { Item } from './../entities/item.entity';
+import { Review } from './../entities/review.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -26,6 +32,6 @@ import { JwtStrategy } from './jwt.strategy';
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [JwtStrategy, PassportModule],
+  exports: [JwtStrategy, PassportModule, AuthService],
 })
 export class AuthModule {}
