@@ -1,6 +1,10 @@
 import { User } from './../entities/user.entity';
 import { RentsRepository } from './rents.repository';
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Rent } from 'src/entities/rent.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,6 +40,12 @@ export class RentsService {
       throw new NotAcceptableException(
         'User can not rent an item from himself',
       );
+    }
+  }
+  async cancelRent(id: number): Promise<void> {
+    const result = await this.rentsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Rent with ID "${id}" not found`);
     }
   }
 }

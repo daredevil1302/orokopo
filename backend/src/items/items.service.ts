@@ -82,4 +82,11 @@ export class ItemsService {
     return foundItem;
     //Odustati od ovog observable + reopsitory.update rjesenja i vratiti staro
   }
+
+  async deleteItem(id: number): Promise<void> {
+    const result = await this.itemsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Item with ID "${id}" not found`);
+    }
+  }
 }
