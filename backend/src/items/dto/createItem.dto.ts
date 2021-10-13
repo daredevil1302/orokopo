@@ -1,4 +1,6 @@
+import { Category } from './../../entities/category.entity';
 import {
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsNumber,
@@ -34,7 +36,8 @@ export class CreateItemDto {
   userId: number;
 
   @IsNotEmpty()
-  categoryId: number;
+  @IsArray()
+  categoryIds: number[];
 
   @IsOptional()
   imageUrl: string;
