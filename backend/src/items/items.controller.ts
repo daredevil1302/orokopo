@@ -16,10 +16,10 @@ import {
 } from '@nestjs/common';
 import { Item } from 'src/entities/item.entity';
 import { CategoriesService } from './categories.service';
-import { Observable } from 'rxjs';
-import { UpdateResult } from 'typeorm';
+
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @Controller('items')
 @UseGuards(AuthGuard())
@@ -36,6 +36,7 @@ export class ItemsController {
   }
 
   @Get('/my')
+  @ApiBearerAuth()
   async getMyItems(@GetUser() user: User): Promise<Item[]> {
     return this.itemsService.getMyItems(user);
   }
@@ -51,10 +52,13 @@ export class ItemsController {
   }
 
   @Delete('/:id')
+  @ApiBearerAuth()
   deleteItem(@Param('id') id: number): Promise<void> {
     return this.itemsService.deleteItem(id);
   }
   @Post('/createitem')
+  @ApiBearerAuth()
+  @ApiBody({ type: CreateItemDto })
   async createItem(@Body() createItemDto: CreateItemDto): Promise<Item> {
     const user = await this.authService.getUserById(createItemDto.userId);
     const categories = await this.categoriesService.getCategoryByIds(
@@ -64,6 +68,7 @@ export class ItemsController {
   }
 
   @Patch('/:id/update')
+  @ApiBearerAuth()
   async updateItem(
     @Param('id') id: number,
     @Body() updateItemDto: UpdateItemDto,
