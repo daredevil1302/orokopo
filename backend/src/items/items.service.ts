@@ -1,3 +1,4 @@
+import { User } from './../entities/user.entity';
 import { UpdateItemDto } from './dto/updateItem.dto';
 import { Category } from './../entities/category.entity';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -5,7 +6,6 @@ import { ItemsRepository } from './items.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Item } from 'src/entities/item.entity';
-import { User } from 'src/entities/user.entity';
 import { from, Observable } from 'rxjs';
 import { UpdateResult } from 'typeorm';
 
@@ -17,7 +17,17 @@ export class ItemsService {
   ) {}
 
   async getItems(): Promise<Item[]> {
-    return await this.itemsRepository.find();
+    return await this.itemsRepository.find({
+      relations: ['user', 'categories'],
+    });
+  }
+
+  async getMyItems(user: User): Promise<Item[]> {
+    return await this.itemsRepository.getMyItems(user);
+  }
+
+  async getOtherItems(user: User): Promise<Item[]> {
+    return await this.itemsRepository.getOtherItems(user);
   }
 
   async getItemById(id: number): Promise<Item> {

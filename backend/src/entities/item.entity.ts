@@ -11,6 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity('item')
 export class Item extends BaseEntity {

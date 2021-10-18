@@ -8,6 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -21,27 +22,34 @@ export class User extends BaseEntity {
   surname: string;
 
   @Column('varchar', { length: 50 })
+  @Exclude({ toPlainOnly: true })
   street: string;
 
   @Column('varchar', { length: 50 })
+  @Exclude({ toPlainOnly: true })
   city: string;
 
   @Column('varchar', { length: 5 })
+  @Exclude({ toPlainOnly: true })
   zip: string;
 
   @Column({ type: 'int', nullable: true })
   rating: number;
 
   @Column('varchar', { length: 10 })
+  @Exclude({ toPlainOnly: true })
   phone: string;
 
   @Column('date')
+  @Exclude({ toPlainOnly: true })
   date: Date;
 
   @Column({ type: 'varchar', length: 50, nullable: false, unique: true })
+  @Exclude({ toPlainOnly: true })
   email: string;
 
   @Column({ type: 'varchar', length: 75, nullable: false })
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @OneToMany(() => Review, (review) => review.user)

@@ -1,3 +1,4 @@
+import { User } from './../entities/user.entity';
 import { UpdateItemDto } from './dto/updateItem.dto';
 import { AuthService } from './../auth/auth.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -11,13 +12,17 @@ import {
   Patch,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { Item } from 'src/entities/item.entity';
 import { CategoriesService } from './categories.service';
 import { Observable } from 'rxjs';
 import { UpdateResult } from 'typeorm';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @Controller('items')
+@UseGuards(AuthGuard())
 export class ItemsController {
   constructor(
     private itemsService: ItemsService,
@@ -28,6 +33,16 @@ export class ItemsController {
   @Get('/all')
   async getItems(): Promise<Item[]> {
     return this.itemsService.getItems();
+  }
+
+  @Get('/my')
+  async getMyItems(@GetUser() user: User): Promise<Item[]> {
+    return this.itemsService.getMyItems(user);
+  }
+
+  @Get('/other')
+  async getOtherItems(@GetUser() user: User): Promise<Item[]> {
+    return this.itemsService.getOtherItems(user);
   }
 
   @Get('/:id')
