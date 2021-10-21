@@ -33,9 +33,6 @@ export class User extends BaseEntity {
   @Exclude({ toPlainOnly: true })
   zip: string;
 
-  @Column({ type: 'int', nullable: true })
-  rating: number;
-
   @Column('varchar', { length: 10 })
   @Exclude({ toPlainOnly: true })
   phone: string;

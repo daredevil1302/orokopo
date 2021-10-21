@@ -23,6 +23,7 @@ export class ItemsService {
   }
 
   async getMyItems(user: User): Promise<Item[]> {
+    console.log(user);
     return await this.itemsRepository.getMyItems(user);
   }
 

@@ -1,27 +1,19 @@
+import { UpdatePassDto } from './dto/updatePass.dto';
+import { User } from './../entities/user.entity';
 import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { SignUpDto } from './dto/signup.dto';
-import { User } from '../entities/user.entity';
+
 import * as bcrypt from 'bcrypt';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
   async createUser(signUpDto: SignUpDto): Promise<void> {
-    const {
-      name,
-      surname,
-      street,
-      city,
-      zip,
-      rating,
-      phone,
-      date,
-      email,
-      password,
-    } = signUpDto;
+    const { name, surname, street, city, zip, phone, date, email, password } =
+      signUpDto;
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -32,7 +24,6 @@ export class UsersRepository extends Repository<User> {
       street,
       city,
       zip,
-      rating,
       phone,
       date,
       email,
@@ -48,5 +39,18 @@ export class UsersRepository extends Repository<User> {
         throw new InternalServerErrorException();
       }
     }
+  }
+  async changePassword(user: User, updatePass: UpdatePassDto): Promise<User> {
+    const { password } = updatePass;
+
+    const salt = await bcrypt.genSalt();
+
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    user.password = hashedPassword;
+
+    await this.save(user);
+
+    return user;
   }
 }

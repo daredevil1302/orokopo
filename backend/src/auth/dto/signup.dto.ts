@@ -36,9 +36,6 @@ export class SignUpDto {
   @ApiProperty({ type: String, description: 'zip code' })
   zip: string;
 
-  @ApiProperty({ type: String, description: 'name' })
-  rating: number;
-
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String, description: 'phone' })

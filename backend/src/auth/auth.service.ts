@@ -1,3 +1,4 @@
+import { UpdatePassDto } from './dto/updatePass.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignUpDto } from './dto/signup.dto';
@@ -23,6 +24,7 @@ export class AuthService {
   async signIn(signInDto: SignInDto): Promise<{ accessToken: string }> {
     const { email, password } = signInDto;
     const user = await this.usersRepository.findOne({ email });
+
     if (user && (await bcrypt.compare(password, user.password))) {
       const payload: JwtPayload = { email };
       const accessToken: string = await this.jwtService.sign(payload);
@@ -31,6 +33,11 @@ export class AuthService {
       throw new UnauthorizedException('Check your login credentials');
     }
   }
+
+  async changePassword(user: User, updatePass: UpdatePassDto): Promise<User> {
+    return await this.usersRepository.changePassword(user, updatePass);
+  }
+
   async getUserById(id: number): Promise<User> {
     return await this.usersRepository.findOne(id, {
       relations: ['items', 'rents', 'reviews'],

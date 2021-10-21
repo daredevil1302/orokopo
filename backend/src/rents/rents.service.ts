@@ -18,6 +18,16 @@ export class RentsService {
     private rentsRepository: RentsRepository,
   ) {}
 
+  async getRents(): Promise<Rent[]> {
+    return await this.rentsRepository.find({ relations: ['user', 'item'] });
+  }
+
+  async getRent(id: number): Promise<Rent> {
+    return await this.rentsRepository.findOne(id, {
+      relations: ['user', 'item'],
+    });
+  }
+
   async createRent(
     createRentDto: CreateRentDto,
     user: User,
@@ -42,10 +52,14 @@ export class RentsService {
       );
     }
   }
-  async cancelRent(id: number): Promise<void> {
-    const result = await this.rentsRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Rent with ID "${id}" not found`);
+
+  async cancelRent(id: number, user: User): Promise<void> {
+    const foundRent = await this.getRent(id);
+
+    if (foundRent && foundRent.user.id === user.id) {
+      await this.rentsRepository.delete(id);
+    } else {
+      throw new NotAcceptableException('Invalid Rent');
     }
   }
 }
