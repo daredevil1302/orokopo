@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Homepage.scss";
 import { Redirect, Route, Link, useHistory } from "react-router-dom";
 import { Layout, Menu, Breadcrumb, Input, Space } from "antd";
@@ -8,11 +8,31 @@ const { Header, Content, Footer } = Layout;
 const { Search } = Input;
 
 const Homepage = () => {
+  const [items, setItems] = useState([]);
+  const [selectedSearchKey, setSelectedSearchKey] = useState("");
+  const axios = require("axios");
   const history = useHistory();
 
+  const fetchItems = () => {
+    let url = `http://localhost:5000/items/all`;
+    if (selectedSearchKey !== "") {
+      url += `?search=${selectedSearchKey}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        setItems(res.data);
+      })
+      .then(() => history.push("/items"));
+  };
+  const searchOnEmpty = (e) => {
+    if (e.target.value === "") {
+      setSelectedSearchKey("");
+    }
+  };
   useEffect(() => {
-    history.push("items");
-  }, []);
+    fetchItems();
+  }, [selectedSearchKey]);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -37,13 +57,20 @@ const Homepage = () => {
         >
           <Search
             placeholder="Browse items"
-            onSearch={() => console.log("dinamo")}
+            onSearch={(e) => setSelectedSearchKey(e)}
+            onChange={searchOnEmpty}
             enterButton
             size="large"
           />
         </Space>
-        <Route exact path={"/items"} component={Items}></Route>
-        <div className="site-layout-content"></div>
+
+        <div className="site-layout-content">
+          <Route
+            exact
+            path={"/items"}
+            render={() => <Items items={items} />}
+          ></Route>
+        </div>
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Ant Design ©2018 Created by Ant UED

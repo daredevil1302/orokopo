@@ -1,35 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col } from "antd";
+import "./Items.scss";
+import { Card, Row, Col, Button } from "antd";
 
 const { Meta } = Card;
 
-const Items = () => {
-  const [items, setItems] = useState([]);
-  const axios = require("axios");
-
-  useEffect(() => {
-    axios.get("http://localhost:5000/items/all").then((res) => {
-      setItems(res.data);
-    });
-  });
-
+const Items = ({ items }) => {
   return (
     <div>
-      <Row>
-        {items.forEach((item) => {
-          <Col flex="auto">
-            <Card
-              hoverable
-              style={{ width: 120 }}
-              cover={<img alt="example" src={`${item.imageUrl}`} />}
-            >
-              <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
-              />
-            </Card>
-          </Col>;
+      <Row gutter={[24, 24]}>
+        {items.map((item) => {
+          return (
+            <Col xs={24} xl={8}>
+              <Card
+                size={"small"}
+                hoverable
+                bordered={true}
+                // style={{ width: 240 }}
+                cover={<img alt="example" src={`${item.imageUrl}`} />}
+                actions={[<Button type="primary">Rent item</Button>]}
+              >
+                <Meta
+                  title={`${item.name}`}
+                  description={`${item.description}`}
+                />
+                <p className="price">{item.price} kn/day</p>
+              </Card>
+            </Col>
+          );
         })}
+        ;
       </Row>
     </div>
   );

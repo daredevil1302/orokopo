@@ -1,3 +1,4 @@
+import { FilterItemDto } from './dto/filterItem.dto';
 import { User } from './../entities/user.entity';
 import { UpdateItemDto } from './dto/updateItem.dto';
 import { Category } from './../entities/category.entity';
@@ -16,10 +17,8 @@ export class ItemsService {
     private itemsRepository: ItemsRepository,
   ) {}
 
-  async getItems(): Promise<Item[]> {
-    return await this.itemsRepository.find({
-      relations: ['user', 'categories'],
-    });
+  async getItems(filterItemDto: FilterItemDto): Promise<Item[]> {
+    return await this.itemsRepository.getItems(filterItemDto);
   }
 
   async getMyItems(user: User): Promise<Item[]> {
@@ -44,7 +43,7 @@ export class ItemsService {
 
   async createItem(
     createItemDto: CreateItemDto,
-    user: User,
+    currentUser: User,
     categories: Array<Category>,
   ): Promise<Item> {
     const newItem = await this.itemsRepository.save({
@@ -58,8 +57,8 @@ export class ItemsService {
       categories: categories,
     });
 
-    user.items = [...user.items, newItem];
-    await user.save();
+    currentUser.items = [...currentUser.items, newItem];
+    await currentUser.save();
 
     return newItem;
   }
@@ -87,6 +86,7 @@ export class ItemsService {
     foundItem.delivery = delivery;
     foundItem.cancellation = cancellation;
     foundItem.rating = rating;
+    foundItem.imageUrl = imageUrl;
     foundItem.categories = categories;
 
     await this.itemsRepository.save(foundItem);

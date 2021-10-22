@@ -35,6 +35,7 @@ export class UpdateItemDto {
   rating: number;
 
   @IsArray()
+  @IsOptional()
   @ApiProperty({ type: Array, description: 'IDs of categories' })
   categoryIds: number[];
 

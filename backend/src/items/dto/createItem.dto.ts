@@ -39,7 +39,7 @@ export class CreateItemDto {
   @ApiProperty({ type: Number, description: 'rating' })
   rating: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ type: Number, description: 'userID' })
   userId: number;
 

@@ -1,5 +1,7 @@
+import { FilterItemDto } from './dto/filterItem.dto';
+import { User } from 'src/entities/user.entity';
 import { JwtAuthGuard } from './../auth/jwt-auth.guard';
-import { User } from './../entities/user.entity';
+
 import { UpdateItemDto } from './dto/updateItem.dto';
 import { AuthService } from './../auth/auth.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -13,6 +15,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -36,8 +39,8 @@ export class ItemsController {
     status: 200,
     description: 'Fetches all items',
   })
-  async getItems(): Promise<Item[]> {
-    return this.itemsService.getItems();
+  async getItems(@Query() filterItemDto: FilterItemDto): Promise<Item[]> {
+    return this.itemsService.getItems(filterItemDto);
   }
 
   @Get('/my')
@@ -90,12 +93,15 @@ export class ItemsController {
     description: 'Creates an item',
   })
   @ApiBody({ type: CreateItemDto })
-  async createItem(@Body() createItemDto: CreateItemDto): Promise<Item> {
-    const user = await this.authService.getUserById(createItemDto.userId);
+  async createItem(
+    @GetUser() user: User,
+    @Body() createItemDto: CreateItemDto,
+  ): Promise<Item> {
+    const currentUser = await this.authService.getUserById(user.id);
     const categories = await this.categoriesService.getCategoryByIds(
       createItemDto.categoryIds,
     );
-    return this.itemsService.createItem(createItemDto, user, categories);
+    return this.itemsService.createItem(createItemDto, currentUser, categories);
   }
 
   @Patch('/:id/update')
