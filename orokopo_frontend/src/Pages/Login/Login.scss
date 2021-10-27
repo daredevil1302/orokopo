@@ -1,0 +1,28 @@
+.form-content {
+  padding-top: 32px;
+}
+.log-form {
+  display: flex;
+  justify-content: center;
+}
+
+.login-form {
+  width: 500px;
+
+  .login-button {
+    .ant-form-item-control-input-content {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .remember-me {
+    .ant-form-item-control-input-content {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  .site-form-item-icon {
+    margin-right: 15px;
+  }
+}

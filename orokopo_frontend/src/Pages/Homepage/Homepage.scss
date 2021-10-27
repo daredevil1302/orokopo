@@ -14,3 +14,13 @@
   float: right;
   margin: 16px 0 16px 24px;
 }
+
+.user-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 64px;
+  .user-info-wrap {
+    margin-left: 14px;
+  }
+}

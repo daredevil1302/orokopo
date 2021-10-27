@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
 import "./Items.scss";
-import { Card, Row, Col, Button } from "antd";
+import { Card, Row, Col, Button, Space, Input } from "antd";
 
 const { Meta } = Card;
 
-const Items = ({ items }) => {
+const { Search } = Input;
+
+const Items = ({ items, searchOnEmpty, setSearchKey }) => {
   return (
     <div>
+      <Space style={{ width: 300, paddingBottom: "40px" }} direction="vertical">
+        <Search
+          placeholder="Browse items"
+          onSearch={setSearchKey}
+          onChange={searchOnEmpty}
+          enterButton
+          size="large"
+        />
+      </Space>
       <Row gutter={[24, 24]}>
         {items.map((item) => {
           return (

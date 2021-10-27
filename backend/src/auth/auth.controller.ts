@@ -72,7 +72,9 @@ export class AuthController {
   @ApiOkResponse({ description: 'User login' })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   @ApiBody({ type: SignInDto })
-  signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
+  signIn(
+    @Body() signInDto: SignInDto,
+  ): Promise<{ accessToken: string; user: User }> {
     return this.authService.signIn(signInDto);
   }
 }

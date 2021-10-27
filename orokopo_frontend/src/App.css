@@ -28,6 +28,46 @@
   color: #61dafb;
 }
 
+.ant-alert-content {
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  font-style: italic;
+  padding-right: 30px;
+}
+
+.ant-menu-horizontal {
+  width: 100% !important;
+}
+.ant-menu-overflow {
+  display: block !important;
+}
+
+.float-right {
+  float: right !important;
+}
+
+.ant-picker-date-panel {
+  border-right: 2px solid black;
+}
+
+.mt20 {
+  margin-top: 20px !important;
+}
+.mr20 {
+  margin-right: 20px;
+}
+.ml20 {
+  margin-left: 20px;
+}
+
+/* .swal-button--cancel {
+  background-color: #ff4d4f;
+  color: white;
+}
+.swal-button--cancel:hover {
+  opacity: 0.8 !important;
+} */
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
