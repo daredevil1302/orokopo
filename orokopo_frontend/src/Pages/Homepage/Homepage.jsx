@@ -8,8 +8,19 @@ import {
   Switch,
   useLocation,
 } from "react-router-dom";
-import { Layout, Menu, Breadcrumb, Input, Space, Spin } from "antd";
-import { showNotification } from "../../Notification";
+import {
+  Layout,
+  Menu,
+  Breadcrumb,
+  Input,
+  Space,
+  Spin,
+  Modal,
+  DatePicker,
+  Divider,
+  Descriptions,
+} from "antd";
+import moment from "moment";
 import Items from "../../Components/Items/Items";
 import {
   SettingOutlined,
@@ -22,6 +33,8 @@ import AuthVerify from "../../Common/auth-verify";
 import { useUser } from "../../UserContext";
 import Login from "../Login/Login";
 import Signup from "../SignUp/Signup";
+import ChangePass from "../ChangePass/ChangePass";
+import { showNotification } from "../../Notification";
 
 const { Header, Content, Footer } = Layout;
 const { Search } = Input;
@@ -31,13 +44,50 @@ const Homepage = () => {
   const [selectedSearchKey, setSelectedSearchKey] = useState("");
   const [user, loginUser, logoutUser] = useUser(useUser);
   const [spin, setSpin] = useState(false);
+  const [pickedDate, setPickedDate] = useState();
+  const [currentItem, setCurrentItem] = useState({});
+  const [difference, setDifference] = useState();
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const location = useLocation();
   const axios = require("axios");
   const history = useHistory();
 
+  function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().endOf("day");
+  }
+
   const handleLogin = ({ email, password }) => {
     loginAction(email, password);
     setSpin(true);
+  };
+
+  const openModal = (item) => {
+    setIsModalVisible(true);
+    setCurrentItem(item);
+  };
+
+  const closeModal = () => {
+    console.log(currentItem);
+    setCurrentItem({});
+    setDifference(null);
+    setIsModalVisible(false);
+    setPickedDate(null);
+  };
+
+  const cancelModal = () => {
+    setCurrentItem({});
+    setDifference(null);
+    setIsModalVisible(false);
+    setPickedDate(null);
+  };
+
+  const handleDate = (date) => {
+    if (date) {
+      const currentDate = moment().startOf("day").format("YYYY-MM-DD HH:mm:ss");
+      const daydiff = date.startOf("day").diff(currentDate, "days");
+      setDifference(daydiff);
+    }
   };
 
   const loginAction = (email, password) => {
@@ -57,13 +107,13 @@ const Homepage = () => {
           surname,
           accessToken,
         };
+        showNotification("Login successful!");
         loginUser(currentUser);
         setSpin(false);
       })
       .catch((e) => {
-        console.log(e);
         if (e.response && e.response.data) {
-          showNotification(e.response.data, "error");
+          showNotification(e.response.data.message, "error");
         } else {
           showNotification("Invalid credentials", "error");
         }
@@ -80,6 +130,7 @@ const Homepage = () => {
       .get(url)
       .then((res) => {
         setItems(res.data);
+        setSpin(false);
       })
       .then(() => history.push("/items"));
   };
@@ -89,8 +140,14 @@ const Homepage = () => {
     }
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    history.push("/items");
+  };
+
   useEffect(() => {
     fetchItems();
+    setSpin(true);
   }, [selectedSearchKey]);
 
   return (
@@ -126,13 +183,23 @@ const Homepage = () => {
               </Menu.Item>
 
               {user && (
-                <Menu.Item
-                  key="change-password"
-                  className="float-right"
-                  icon={<LockOutlined />}
-                >
-                  <Link to="change-password">Change Password</Link>
-                </Menu.Item>
+                <>
+                  <Menu.Item
+                    key="logout"
+                    icon={<LogoutOutlined />}
+                    onClick={() => handleLogout()}
+                    className="float-right"
+                  >
+                    Log out
+                  </Menu.Item>
+                  <Menu.Item
+                    key="change-password"
+                    className="float-right"
+                    icon={<LockOutlined />}
+                  >
+                    <Link to="change-password">Change Password</Link>
+                  </Menu.Item>
+                </>
               )}
 
               <div className="user-wrap float-right">
@@ -150,6 +217,41 @@ const Homepage = () => {
       <Content style={{ padding: "50px 50px" }}>
         <div className="site-layout-content">
           {spin && <Spin />}
+          <Modal
+            title="Rent details"
+            visible={isModalVisible}
+            onCancel={cancelModal}
+            onOk={closeModal}
+            okText="Confirm rent"
+            cancelText="Cancel rent"
+          >
+            <DatePicker
+              placeholder="Rent until: "
+              format="YYYY-MM-DD HH:mm:ss"
+              disabledDate={disabledDate}
+              onChange={(date) => {
+                const currentDate = moment()
+                  .startOf("day")
+                  .format("YYYY-MM-DD HH:mm:ss");
+                const daydiff = date.startOf("day").diff(currentDate, "days");
+                setDifference(daydiff);
+                setPickedDate(date);
+              }}
+              value={pickedDate ? pickedDate : null}
+              showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+              className="date-picker2"
+            />
+            {difference && (
+              <>
+                <Divider />
+                <Descriptions title={`Total price for ${difference} days is: `}>
+                  <Descriptions.Item>
+                    {currentItem.price * difference} kn
+                  </Descriptions.Item>
+                </Descriptions>
+              </>
+            )}
+          </Modal>
           <Switch>
             <Route
               exact
@@ -159,6 +261,7 @@ const Homepage = () => {
                   items={items}
                   searchOnEmpty={searchOnEmpty}
                   setSearchKey={setSelectedSearchKey}
+                  openModal={openModal}
                 />
               )}
             ></Route>
@@ -177,6 +280,11 @@ const Homepage = () => {
               exact
               path="/login"
               component={() => <Login handleLogin={handleLogin} />}
+            />
+            <Route
+              exact
+              path="/change-password"
+              render={() => (user ? <ChangePass /> : <Redirect to="/login" />)}
             />
             <Route exact path="/signup" component={Signup} />
           </Switch>

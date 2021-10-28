@@ -44,6 +44,7 @@ const Signup = () => {
         password: password,
       })
       .then(() => {
+        showNotification("Registration successful!");
         history.push("/items");
       })
       .catch((e) => {

@@ -6,7 +6,7 @@ const { Meta } = Card;
 
 const { Search } = Input;
 
-const Items = ({ items, searchOnEmpty, setSearchKey }) => {
+const Items = ({ items, searchOnEmpty, setSearchKey, openModal }) => {
   return (
     <div>
       <Space style={{ width: 300, paddingBottom: "40px" }} direction="vertical">
@@ -28,7 +28,11 @@ const Items = ({ items, searchOnEmpty, setSearchKey }) => {
                 bordered={true}
                 // style={{ width: 240 }}
                 cover={<img alt="example" src={`${item.imageUrl}`} />}
-                actions={[<Button type="primary">Rent item</Button>]}
+                actions={[
+                  <Button type="primary" onClick={() => openModal(item)}>
+                    Rent item
+                  </Button>,
+                ]}
               >
                 <Meta
                   title={`${item.name}`}
