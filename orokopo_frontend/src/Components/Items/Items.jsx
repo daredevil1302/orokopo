@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Items.scss";
+import { useUser } from "../../UserContext";
 import { Card, Row, Col, Button, Space, Input } from "antd";
 
 const { Meta } = Card;
@@ -7,6 +8,7 @@ const { Meta } = Card;
 const { Search } = Input;
 
 const Items = ({ items, searchOnEmpty, setSearchKey, openModal }) => {
+  const [user] = useUser(useUser);
   return (
     <div>
       <Space style={{ width: 300, paddingBottom: "40px" }} direction="vertical">
@@ -29,7 +31,11 @@ const Items = ({ items, searchOnEmpty, setSearchKey, openModal }) => {
                 // style={{ width: 240 }}
                 cover={<img alt="example" src={`${item.imageUrl}`} />}
                 actions={[
-                  <Button type="primary" onClick={() => openModal(item)}>
+                  <Button
+                    type="primary"
+                    disabled={user ? false : true}
+                    onClick={() => openModal(item)}
+                  >
                     Rent item
                   </Button>,
                 ]}

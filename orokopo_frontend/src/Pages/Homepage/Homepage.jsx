@@ -44,7 +44,8 @@ const Homepage = () => {
   const [selectedSearchKey, setSelectedSearchKey] = useState("");
   const [user, loginUser, logoutUser] = useUser(useUser);
   const [spin, setSpin] = useState(false);
-  const [pickedDate, setPickedDate] = useState();
+  const [pickedFrom, setPickedFrom] = useState();
+  const [pickedUntil, setPickedUntil] = useState();
   const [currentItem, setCurrentItem] = useState({});
   const [difference, setDifference] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -67,19 +68,37 @@ const Homepage = () => {
     setCurrentItem(item);
   };
 
+  const createRent = () => {
+    axios
+      .post("http://localhost:5000/rents/createRent", {
+        date_from: pickedFrom,
+        date_to: pickedUntil,
+        userId: user.id,
+        itemId: currentItem.id,
+      })
+      .then(() => {
+        showNotification("Item rented");
+        setCurrentItem({});
+        setDifference(null);
+        setIsModalVisible(false);
+        setPickedFrom(null);
+        setPickedUntil(null);
+      })
+      .catch((e) => {
+        showNotification(e.response.data.message, "error");
+      });
+  };
+
   const closeModal = () => {
-    console.log(currentItem);
-    setCurrentItem({});
-    setDifference(null);
-    setIsModalVisible(false);
-    setPickedDate(null);
+    createRent();
   };
 
   const cancelModal = () => {
     setCurrentItem({});
     setDifference(null);
     setIsModalVisible(false);
-    setPickedDate(null);
+    setPickedFrom(null);
+    setPickedUntil(null);
   };
 
   const handleDate = (date) => {
@@ -149,6 +168,15 @@ const Homepage = () => {
     fetchItems();
     setSpin(true);
   }, [selectedSearchKey]);
+
+  useEffect(() => {
+    if (pickedFrom && pickedUntil) {
+      let difference = pickedUntil
+        .startOf("day")
+        .diff(pickedFrom.startOf("day"), "days");
+      setDifference(difference);
+    }
+  }, [pickedFrom, pickedUntil]);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -225,22 +253,51 @@ const Homepage = () => {
             okText="Confirm rent"
             cancelText="Cancel rent"
           >
-            <DatePicker
-              placeholder="Rent until: "
-              format="YYYY-MM-DD HH:mm:ss"
-              disabledDate={disabledDate}
-              onChange={(date) => {
-                const currentDate = moment()
-                  .startOf("day")
-                  .format("YYYY-MM-DD HH:mm:ss");
-                const daydiff = date.startOf("day").diff(currentDate, "days");
-                setDifference(daydiff);
-                setPickedDate(date);
-              }}
-              value={pickedDate ? pickedDate : null}
-              showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
-              className="date-picker2"
-            />
+            <Space direction="vertical">
+              <DatePicker
+                allowClear={false}
+                placeholder="Rent from: "
+                format="YYYY-MM-DD HH:mm:ss"
+                disabledDate={disabledDate}
+                onChange={(date) => {
+                  if (date) {
+                    // const currentDate = moment()
+                    //   .startOf("day")
+                    //   .format("YYYY-MM-DD HH:mm:ss");
+                    // const daydiff = date
+                    //   .startOf("day")
+                    //   .diff(currentDate, "days");
+                    // setDifference(daydiff);
+                    setPickedFrom(date);
+                  }
+                }}
+                value={pickedFrom ? pickedFrom : null}
+                showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                className="date-picker2"
+              />
+              <DatePicker
+                allowClear={false}
+                placeholder="Rent until: "
+                format="YYYY-MM-DD HH:mm:ss"
+                disabledDate={disabledDate}
+                onChange={(date) => {
+                  if (date) {
+                    // const currentDate = moment()
+                    //   .startOf("day")
+                    //   .format("YYYY-MM-DD HH:mm:ss");
+                    // const daydiff = date
+                    //   .startOf("day")
+                    //   .diff(currentDate, "days");
+                    // setDifference(daydiff);
+                    setPickedUntil(date);
+                  }
+                }}
+                value={pickedUntil ? pickedUntil : null}
+                showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                className="date-picker2"
+              />
+            </Space>
+
             {difference && (
               <>
                 <Divider />
