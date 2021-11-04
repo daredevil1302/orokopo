@@ -21,6 +21,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('rents')
 @UseGuards(AuthGuard())
@@ -32,14 +33,15 @@ export class RentsController {
   ) {}
 
   @Post('/createRent')
+  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({ status: 201, description: 'Created a rent' })
   @ApiBearerAuth()
   @ApiBody({ type: CreateRentDto })
   async createRent(@Body() createRentDto: CreateRentDto): Promise<Rent> {
     const user = await this.authService.getUserById(createRentDto.userId);
     const item = await this.itemsService.getItemById(createRentDto.itemId);
-
-    return this.rentsService.createRent(createRentDto, user, item);
+    const myRents = await this.rentsService.getMyRents(user);
+    return this.rentsService.createRent(createRentDto, user, item, myRents);
   }
 
   @Get('/allrents')
@@ -47,6 +49,17 @@ export class RentsController {
   @ApiResponse({ status: 200, description: 'Fetches all rents' })
   async getRents(): Promise<Rent[]> {
     return this.rentsService.getRents();
+  }
+
+  @Get('/my')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Fetches items rented by the current user',
+  })
+  @ApiBearerAuth()
+  async getMyItems(@GetUser() user: User): Promise<Rent[]> {
+    return this.rentsService.getMyRents(user);
   }
 
   @Get(':id/rent')
@@ -57,6 +70,7 @@ export class RentsController {
   }
 
   @Delete(':id/cancel')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,

@@ -15,4 +15,14 @@ export class RentsRepository extends Repository<Rent> {
   //     });
   //   await query.delete();
   // }
+  async getMyRents(user: User): Promise<Rent[]> {
+    const query = this.createQueryBuilder('rent')
+      .leftJoinAndSelect('rent.user', 'user')
+      .leftJoinAndSelect('rent.item', 'item');
+
+    query.where({ user });
+
+    const rents = await query.getMany();
+    return rents;
+  }
 }

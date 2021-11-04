@@ -35,6 +35,7 @@ import Login from "../Login/Login";
 import Signup from "../SignUp/Signup";
 import ChangePass from "../ChangePass/ChangePass";
 import { showNotification } from "../../Notification";
+import MyRents from "../MyRents/MyRents";
 
 const { Header, Content, Footer } = Layout;
 const { Search } = Input;
@@ -57,6 +58,20 @@ const Homepage = () => {
     // Can not select days before today and today
     return current && current < moment().endOf("day");
   }
+
+  const onDateClear = (e, type) => {
+    const date1 = moment(e).format("YYYY-MM-DD HH:mm:ss");
+    console.log(date1);
+    console.log(typeof date1);
+    console.log();
+    if (e === null) {
+      if (type === "from") {
+        setPickedFrom("");
+      } else {
+        setPickedUntil("");
+      }
+    }
+  };
 
   const handleLogin = ({ email, password }) => {
     loginAction(email, password);
@@ -99,14 +114,6 @@ const Homepage = () => {
     setIsModalVisible(false);
     setPickedFrom(null);
     setPickedUntil(null);
-  };
-
-  const handleDate = (date) => {
-    if (date) {
-      const currentDate = moment().startOf("day").format("YYYY-MM-DD HH:mm:ss");
-      const daydiff = date.startOf("day").diff(currentDate, "days");
-      setDifference(daydiff);
-    }
   };
 
   const loginAction = (email, password) => {
@@ -222,7 +229,7 @@ const Homepage = () => {
                   </Menu.Item>
                   <Menu.Item
                     key="change-password"
-                    className="float-right"
+                    className="float-right ml20"
                     icon={<LockOutlined />}
                   >
                     <Link to="change-password">Change Password</Link>
@@ -251,49 +258,36 @@ const Homepage = () => {
             onCancel={cancelModal}
             onOk={closeModal}
             okText="Confirm rent"
-            cancelText="Cancel rent"
+            cancelText="Cancel"
           >
             <Space direction="vertical">
               <DatePicker
                 allowClear={false}
                 placeholder="Rent from: "
-                format="YYYY-MM-DD HH:mm:ss"
+                // format="YYYY-MM-DD HH:mm:ss"
                 disabledDate={disabledDate}
-                onChange={(date) => {
-                  if (date) {
-                    // const currentDate = moment()
-                    //   .startOf("day")
-                    //   .format("YYYY-MM-DD HH:mm:ss");
-                    // const daydiff = date
-                    //   .startOf("day")
-                    //   .diff(currentDate, "days");
-                    // setDifference(daydiff);
-                    setPickedFrom(date);
-                  }
-                }}
+                onChange={(e) => onDateClear(e, "from")}
+                onOk={(date) =>
+                  setPickedFrom(
+                    moment(date).format("YYYY-MM-DD HH:mm:ss"),
+                    "to"
+                  )
+                }
                 value={pickedFrom ? pickedFrom : null}
-                showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                showTime
                 className="date-picker2"
               />
               <DatePicker
                 allowClear={false}
                 placeholder="Rent until: "
-                format="YYYY-MM-DD HH:mm:ss"
+                // format="YYYY-MM-DD HH:mm:ss"
                 disabledDate={disabledDate}
-                onChange={(date) => {
-                  if (date) {
-                    // const currentDate = moment()
-                    //   .startOf("day")
-                    //   .format("YYYY-MM-DD HH:mm:ss");
-                    // const daydiff = date
-                    //   .startOf("day")
-                    //   .diff(currentDate, "days");
-                    // setDifference(daydiff);
-                    setPickedUntil(date);
-                  }
-                }}
+                onChange={(e) => onDateClear(e)}
+                onOk={(date) =>
+                  setPickedUntil(moment(date).format("YYYY-MM-DD HH:mm:ss"))
+                }
                 value={pickedUntil ? pickedUntil : null}
-                showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                showTime
                 className="date-picker2"
               />
             </Space>
@@ -337,6 +331,11 @@ const Homepage = () => {
               exact
               path="/login"
               component={() => <Login handleLogin={handleLogin} />}
+            />
+            <Route
+              exact
+              path={"/myrents"}
+              render={() => (user ? <MyRents /> : <Redirect to="/login" />)}
             />
             <Route
               exact

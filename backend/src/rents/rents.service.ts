@@ -22,6 +22,10 @@ export class RentsService {
     return await this.rentsRepository.find({ relations: ['user', 'item'] });
   }
 
+  async getMyRents(user: User): Promise<Rent[]> {
+    return await this.rentsRepository.getMyRents(user);
+  }
+
   async getRent(id: number): Promise<Rent> {
     return await this.rentsRepository.findOne(id, {
       relations: ['user', 'item'],
@@ -32,7 +36,15 @@ export class RentsService {
     createRentDto: CreateRentDto,
     user: User,
     item: Item,
+    myRents: Rent[],
   ): Promise<Rent> {
+    if (
+      myRents.filter(
+        (rent) => rent.item.id === item.id && rent.user.id === user.id,
+      ).length > 0
+    ) {
+      throw new NotAcceptableException('User already rented that item');
+    }
     if (user.id !== item.user.id) {
       const newRent = await this.rentsRepository.save({
         date_from: createRentDto.date_from,
@@ -40,6 +52,7 @@ export class RentsService {
       });
 
       user.rents = [...user.rents, newRent];
+      console.log(user.rents);
       await user.save();
 
       item.rent = newRent;

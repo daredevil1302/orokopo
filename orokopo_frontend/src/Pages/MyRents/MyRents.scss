@@ -1,0 +1,13 @@
+.red-bg {
+  background-color: #f8485e !important;
+}
+.buttons-col {
+  text-align: center;
+  width: 180px;
+  .btn-wrap {
+    button {
+      margin: 0 2.5px;
+      color: white;
+    }
+  }
+}

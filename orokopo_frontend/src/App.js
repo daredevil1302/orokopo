@@ -10,6 +10,7 @@ function App() {
   const user = JSON.parse(localStorage.getItem("user"));
   if (user) {
     const token = user.accessToken;
+    console.log(token);
     axios.defaults.headers.common = {
       Authorization: "Bearer " + token,
     };
